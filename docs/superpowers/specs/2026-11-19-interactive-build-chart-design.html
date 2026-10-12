@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive StarCraft II build chart — design spec</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font: 1rem/1.6 system-ui, sans-serif; }
+    main { max-width: 68ch; margin: 2rem auto; padding: 0 1.25rem; }
+    h1, h2 { line-height: 1.2; }
+    section { margin-block: 1.75rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p>Design spec</p>
+      <h1>Interactive StarCraft II build chart</h1>
+    </header>
+
+    <section>
+      <h2>Site</h2>
+      <p>Create a static site that opens at <code>index.html</code> from disk or a static host, without a build step, backend, or external dependencies. Use <code>flowchart.png</code> only as a transcription reference; the site must not load or display the PNG.</p>
+    </section>
+
+    <section>
+      <h2>Chart</h2>
+      <p>Recreate the original nodes as HTML cards with selectable text and draw their directed links as SVG arrows. Preserve every branch, build step, supply count, timestamp (including the source's <code>XX:XX</code>), and the meaningful text colors. Keep the top-to-bottom layout and the distinct scouting checkpoints. On narrow viewports, let the chart scroll horizontally rather than shrinking text or stacking branches out of context.</p>
+    </section>
+
+    <section>
+      <h2>Interaction</h2>
+      <p>Hovering over a card or focusing it by keyboard highlights its immediate predecessor and successor cards and the arrows connecting them. Click, tap, Enter, or Space to pin or unpin that highlight, and press Escape or click empty chart space to clear it. Hover and focus may preview a different card without replacing a pinned choice. All chart text and arrows remain visible if JavaScript is unavailable.</p>
+    </section>
+
+    <section>
+      <h2>Checks</h2>
+      <p>Compare the rendered cards and their links against the source. Check visual layout and horizontal scrolling at desktop and phone widths, and verify preview, pin, and clear with mouse, touch, and keyboard. Confirm that the page does not request the PNG. Use local Git for version history; do not configure a remote or push.</p>
+    </section>
+  </main>
+</body>
+</html>
