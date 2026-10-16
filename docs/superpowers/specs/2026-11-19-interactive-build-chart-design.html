@@ -5,38 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Interactive StarCraft II build chart — design spec</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { margin: 0; font: 1rem/1.6 system-ui, sans-serif; }
-    main { max-width: 68ch; margin: 2rem auto; padding: 0 1.25rem; }
-    h1, h2 { line-height: 1.2; }
-    section { margin-block: 1.75rem; }
+    :root {
+      color-scheme: dark;
+      --ink: #060507;
+      --panel: #0f0d11;
+      --paper: #f5edf1;
+      --pink: #ed3d8c;
+      --light-pink: #ff66a8;
+      --line: rgba(245, 237, 241, .14);
+    }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 12% 0%, #1a1218, var(--ink) 70%) fixed;
+      color: var(--paper);
+      font: 1rem/1.55 Inter, system-ui, sans-serif;
+    }
+    .grain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .08; mix-blend-mode: screen; }
+    main { position: relative; max-width: 58rem; margin: clamp(.5rem, 3vw, 2.25rem) auto; padding: clamp(1rem, 4vw, 3rem); border: 1px solid var(--line); }
+    h1, h2 { font-family: "DM Serif Display", Georgia, serif; font-weight: 400; line-height: 1.06; margin: 0; }
+    h1 { font-size: clamp(2.5rem, 7vw, 5.5rem); color: var(--light-pink); max-width: 13ch; }
+    h2 { font-size: clamp(1.65rem, 4vw, 2.5rem); }
+    .kicker, code, th { font-family: "JetBrains Mono", ui-monospace, monospace; }
+    .kicker { color: var(--light-pink); font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; }
+    section { margin-block-start: 2.75rem; border-top: 1px solid var(--line); padding-block-start: 1.25rem; }
+    figure { margin: 1rem 0 0; }
+    figcaption { margin-top: .65rem; }
+    .route { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+    .node { background: var(--panel); padding: .55rem .8rem; border: 1px solid var(--line); border-radius: .3rem; }
+    .accent { border-color: var(--pink); }
+    .arrow { color: var(--light-pink); }
+    .matrix { width: 100%; border-collapse: collapse; }
+    .matrix th, .matrix td { text-align: left; vertical-align: top; padding: .65rem .5rem; border-bottom: 1px solid var(--line); }
+    .matrix th { color: var(--light-pink); font-size: .875rem; }
+    .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .6rem; padding: 0; list-style: none; }
+    .checks strong { display: block; color: var(--light-pink); }
+    :focus-visible { outline: 2px solid var(--light-pink); outline-offset: 3px; }
   </style>
 </head>
 <body>
+  <svg class="grain" aria-hidden="true" focusable="false">
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" stitchTiles="stitch"/></filter>
+    <rect width="100%" height="100%" filter="url(#grain)"/>
+  </svg>
   <main>
     <header>
-      <p>Design spec</p>
+      <p class="kicker">Design spec · Protoss vs. Terran</p>
       <h1>Interactive StarCraft II build chart</h1>
     </header>
 
     <section>
-      <h2>Site</h2>
-      <p>Create a static site that opens at <code>index.html</code> from disk or a static host, without a build step, backend, or external dependencies. Use <code>flowchart.png</code> only as a transcription reference; the site must not load or display the PNG.</p>
+      <h2>01 / How the site opens</h2>
+      <figure>
+        <ol class="route" role="list">
+          <li class="node">Local file or static host</li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node accent"><code>index.html</code></li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node">Selectable HTML cards + directed SVG arrows</li>
+        </ol>
+        <figcaption>No build step, backend, or external dependencies. <code>flowchart.png</code> is a transcription reference only; the site never loads or displays it.</figcaption>
+      </figure>
     </section>
 
     <section>
-      <h2>Chart</h2>
-      <p>Recreate the original nodes as HTML cards with selectable text and draw their directed links as SVG arrows. Preserve every branch, build step, supply count, timestamp (including the source's <code>XX:XX</code>), and the meaningful text colors. Keep the top-to-bottom layout and the distinct scouting checkpoints. On narrow viewports, let the chart scroll horizontally rather than shrinking text or stacking branches out of context.</p>
+      <h2>02 / How a branch reads</h2>
+      <figure>
+        <ol class="route" role="list">
+          <li class="node">Opening</li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node">Sentry + Twilight Council</li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node accent">First hallucination scout</li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node">Mine Drop <small>17:58 · 25:42</small></li>
+        </ol>
+        <figcaption>One example route. The finished chart keeps the original top-to-bottom layout, every branch and scouting checkpoint, all build steps, supply counts, timestamps (including <code>XX:XX</code>), and meaningful text colors. On phones, scroll sideways instead of shrinking the text or stacking branches.</figcaption>
+      </figure>
     </section>
 
     <section>
-      <h2>Interaction</h2>
-      <p>Hovering over a card or focusing it by keyboard highlights its immediate predecessor and successor cards and the arrows connecting them. Click, tap, Enter, or Space to pin or unpin that highlight, and press Escape or click empty chart space to clear it. Hover and focus may preview a different card without replacing a pinned choice. All chart text and arrows remain visible if JavaScript is unavailable.</p>
+      <h2>03 / How a highlight behaves</h2>
+      <table class="matrix" aria-label="Interaction and resulting highlight">
+        <thead><tr><th scope="col">Input</th><th scope="col">Result</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Hover or Tab focus</th><td>Preview the card, its immediate predecessors and successors, and their connecting arrows. An existing pin stays in place.</td></tr>
+          <tr><th scope="row">Click, tap, Enter, or Space</th><td>Pin or unpin the card’s highlight.</td></tr>
+          <tr><th scope="row">Escape or click empty chart space</th><td>Clear the highlight.</td></tr>
+          <tr><th scope="row">JavaScript unavailable</th><td>All chart text and arrows remain visible.</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section>
-      <h2>Checks</h2>
-      <p>Compare the rendered cards and their links against the source. Check visual layout and horizontal scrolling at desktop and phone widths, and verify preview, pin, and clear with mouse, touch, and keyboard. Confirm that the page does not request the PNG. Use local Git for version history; do not configure a remote or push.</p>
+      <h2>04 / What to check</h2>
+      <ul class="checks" role="list">
+        <li class="node"><strong>Fidelity</strong> Compare every rendered card and arrow with the source.</li>
+        <li class="node"><strong>Layout</strong> Check desktop and phone widths, including horizontal scrolling.</li>
+        <li class="node"><strong>Controls</strong> Verify preview, pin, and clear with mouse, touch, and keyboard as applicable.</li>
+        <li class="node"><strong>Offline</strong> Confirm that the site does not request the PNG.</li>
+      </ul>
+      <p>Version history stays in local Git: no remote and no push.</p>
     </section>
   </main>
 </body>
