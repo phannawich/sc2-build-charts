@@ -49,26 +49,40 @@
   </svg>
   <main>
     <header>
-      <p class="kicker">Design spec · Protoss vs. Terran</p>
+      <p class="kicker">Design spec · PvT first</p>
       <h1>Interactive StarCraft II build chart</h1>
     </header>
 
     <section>
-      <h2>01 / How the site opens</h2>
+      <h2>01 / How guides are built and published</h2>
       <figure>
         <ol class="route" role="list">
-          <li class="node">Local file or static host</li>
+          <li class="node">One data file per guide</li>
           <li class="arrow" aria-hidden="true">→</li>
-          <li class="node accent"><code>index.html</code></li>
+          <li class="node accent">Shared Astro chart template</li>
           <li class="arrow" aria-hidden="true">→</li>
-          <li class="node">Selectable HTML cards + directed SVG arrows</li>
+          <li class="node">Static HTML + SVG</li>
+          <li class="arrow" aria-hidden="true">→</li>
+          <li class="node">GitHub Pages</li>
         </ol>
-        <figcaption>No build step, backend, or external dependencies. <code>flowchart.png</code> is a transcription reference only; the site never loads or displays it.</figcaption>
+        <figcaption>Astro builds each guide into selectable HTML cards and directed SVG arrows before deployment. One shared vanilla JavaScript file adds highlighting. The deployed site needs no backend or client-side framework.</figcaption>
       </figure>
+      <p>Each guide defines its cards, positions, and directed connections. The build rejects duplicate card IDs within a guide and connections whose endpoints do not exist. <code>flowchart.png</code> is a PvT transcription reference only; the site never loads or displays it.</p>
+      <p>Use Astro’s local server for development and preview. When the repository is ready to publish, GitHub Actions will build and deploy the static output to GitHub Pages. Configure Astro’s <code>base</code> for the repository path when publishing to a project site, and use it for internal links and asset URLs. Opening the generated pages directly via <code>file://</code> is not required.</p>
     </section>
 
     <section>
-      <h2>02 / How a branch reads</h2>
+      <h2>02 / Which guides ship</h2>
+      <ol class="route" role="list">
+        <li class="node accent">First release · PvT</li>
+        <li class="node">Follow-ups · PvP and PvZ</li>
+        <li class="node">Optional · 2v2</li>
+      </ol>
+      <p>The home page links to published guides only. Each guide has its own URL, starting with <code>pvt/</code> under the site base. PvP and PvZ can reuse the same template when their charts are ready. The shared card-and-connection model does not assume a 1v1 matchup; a separate 2v2 layout is out of scope for the first release.</p>
+    </section>
+
+    <section>
+      <h2>03 / How a branch reads</h2>
       <figure>
         <ol class="route" role="list">
           <li class="node">Opening</li>
@@ -84,7 +98,7 @@
     </section>
 
     <section>
-      <h2>03 / How a highlight behaves</h2>
+      <h2>04 / How a highlight behaves</h2>
       <table class="matrix" aria-label="Interaction and resulting highlight">
         <thead><tr><th scope="col">Input</th><th scope="col">Result</th></tr></thead>
         <tbody>
@@ -97,14 +111,16 @@
     </section>
 
     <section>
-      <h2>04 / What to check</h2>
+      <h2>05 / What to check</h2>
       <ul class="checks" role="list">
         <li class="node"><strong>Fidelity</strong> Compare every rendered card and arrow with the source.</li>
         <li class="node"><strong>Layout</strong> Check desktop and phone widths, including horizontal scrolling.</li>
         <li class="node"><strong>Controls</strong> Verify preview, pin, and clear with mouse, touch, and keyboard as applicable.</li>
-        <li class="node"><strong>Offline</strong> Confirm that the site does not request the PNG.</li>
+        <li class="node"><strong>No JavaScript</strong> Disable JavaScript and confirm all cards and arrows remain visible.</li>
+        <li class="node"><strong>Build validation</strong> Confirm duplicate card IDs and missing arrow endpoints cause the build to fail.</li>
+        <li class="node"><strong>Hosting</strong> Preview the static build under the GitHub Pages base path. Check home-to-guide links, direct guide URLs, and assets. Confirm the site does not request the source PNG.</li>
       </ul>
-      <p>Version history stays in local Git: no remote and no push.</p>
+      <p>Until publication is explicitly requested, keep version history in local Git. Do not add a remote or push as part of this spec update.</p>
     </section>
   </main>
 </body>
