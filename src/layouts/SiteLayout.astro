@@ -1,0 +1,39 @@
+---
+import '@fontsource-variable/big-shoulders-display';
+import '@fontsource-variable/albert-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/site.css';
+
+const { title, description, guidePage = false } = Astro.props;
+const home = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${home}mark.svg`} />
+    <title>{title}</title>
+  </head>
+  <body class:list={[{ 'guide-page': guidePage }]}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a href={home} class="brand">
+        <svg viewBox="0 0 36 36" width="36" height="36" aria-hidden="true">
+          <rect width="36" height="36" fill="#3a2516" />
+          <path d="M18 5 27 18 18 31 9 18Z" fill="#f0bc2a" />
+          <path d="M18 10 23 18 18 26 13 18Z" fill="#3a2516" />
+          <path d="M4 18h9m10 0h9" stroke="#f1e6cb" stroke-width="1.5" />
+        </svg>
+        <span><strong>SC II / BUILD CHARTS</strong><small>THE MATCHUP CATALOGUE</small></span>
+      </a>
+      <nav aria-label="Main"><a href={home} aria-current={guidePage ? undefined : 'page'}>Guide index <span aria-hidden="true">↗</span></a></nav>
+    </header>
+    <slot />
+    <footer class="site-footer shell">
+      <span>STARCRAFT II / BUILD CHARTS</span>
+      <span>PvT chart based on Harstem’s original.</span>
+    </footer>
+  </body>
+</html>

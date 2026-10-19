@@ -1,0 +1,49 @@
+---
+import { validateGuide } from '../guides/validate.js';
+
+const { guide } = Astro.props;
+validateGuide(guide);
+const cards = new Map(guide.cards.map(card => [card.id, card]));
+const name = (id) => cards.get(id).title ?? cards.get(id).label;
+const arrow = `${guide.slug}-arrow`;
+---
+<div class="chart-viewport" role="region" aria-label={`${guide.code} build chart`} aria-describedby="chart-help" tabindex="0" data-chart data-entry={guide.entry}>
+  <div class="chart-plane" style={`--chart-width:${guide.width}px;--chart-height:${guide.height}px`}>
+    <svg class="chart-edges" viewBox={`0 0 ${guide.width} ${guide.height}`} aria-hidden="true" focusable="false">
+      <defs>
+        <marker id={arrow} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0 0L10 5L0 10Z" fill="context-stroke" />
+        </marker>
+      </defs>
+      {guide.edges.map(edge => (
+        <path d={edge.path} marker-end={`url(#${arrow})`} data-from={edge.from} data-to={edge.to} />
+      ))}
+    </svg>
+    {guide.cards.map(card => {
+      const previous = guide.edges.filter(edge => edge.to === card.id).map(edge => name(edge.from));
+      const next = guide.edges.filter(edge => edge.from === card.id).map(edge => name(edge.to));
+      return (
+        <button
+          type="button" class:list={['chart-card', card.tone && `is-${card.tone}`]} id={card.id}
+          data-card={card.id} aria-label={name(card.id)} aria-describedby={`${card.id}-description`} aria-pressed="false"
+          style={`--x:${card.x}px;--y:${card.y}px;--w:${card.width}px;--h:${card.height}px`}
+        >
+          {card.title && <span class="card-title">{card.title}</span>}
+          <span id={`${card.id}-description`}>
+            {card.steps?.map(step => typeof step === 'string' ? <span class="card-step">{step}</span> : (
+              <span class="card-step">
+                <span class={step.value ? undefined : `tone-${step.tone}`}>{step.text}</span>
+                {step.value && <span class={`step-value tone-${step.tone}`}>{step.value}</span>}
+              </span>
+            ))}
+            <span class="sr-only">
+              {previous.length > 0 && ` Previous: ${previous.join(', ')}.`}
+              {next.length > 0 && ` Next: ${next.join(', ')}.`}
+            </span>
+          </span>
+        </button>
+      );
+    })}
+  </div>
+</div>
+<script src="../scripts/chart.js"></script>

@@ -1,0 +1,34 @@
+---
+import Chart from '../../components/Chart.astro';
+import { guides } from '../../guides/index.js';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+
+export function getStaticPaths() {
+  return guides.map(guide => ({ params: { guide: guide.slug }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+---
+<SiteLayout title={`${guide.title} Build Order Chart | StarCraft II`} description={guide.description} guidePage>
+  <main id="main" class="shell guide-main">
+    <header class="guide-heading">
+      <div>
+        <a href={import.meta.env.BASE_URL} class="back-link mono">← All guides</a>
+        <p class="label"><span aria-hidden="true">◆</span> MATCHUP NO. {guide.number} / {guide.code}</p>
+        <h1>{guide.title}<span>.</span></h1>
+        <p class="lede">{guide.description}</p>
+      </div>
+      <div class="ribbon" aria-hidden="true"></div>
+    </header>
+    <section class="chart-shell" aria-labelledby="chart-heading">
+      <header class="chart-header">
+        <div>
+          <h2 id="chart-heading">Build chart</h2>
+          <p id="chart-help">Scroll sideways to see all branches. Hover or Tab to preview. Select a card to pin it; press Esc or select empty space to clear.</p>
+        </div>
+        <a class="button chart-start" href={`#${guide.entry}`}>Go to opening <span aria-hidden="true">↓</span></a>
+      </header>
+      <Chart guide={guide} />
+    </section>
+  </main>
+</SiteLayout>

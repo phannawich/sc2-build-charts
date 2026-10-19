@@ -1,0 +1,41 @@
+---
+import Cassette from '../components/Cassette.astro';
+import { guides } from '../guides/index.js';
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+<SiteLayout title="StarCraft II Build Charts" description="Interactive StarCraft II build orders. Follow a Protoss opening, scout the opponent, and find the right response.">
+  <main id="main" class="shell home-main">
+    <section class="hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="label"><span aria-hidden="true">◆</span> STARCRAFT II STRATEGY</p>
+        <h1 id="home-title">StarCraft II<br />Build Charts<span>.</span></h1>
+        <p class="lede">Learn the opening, read the scout, and choose your next move with interactive matchup charts.</p>
+        <a class="button" href="#catalogue">Browse the guides <span aria-hidden="true">↓</span></a>
+      </div>
+      <Cassette />
+      <div class="ribbon" aria-hidden="true"></div>
+    </section>
+    <section id="catalogue" aria-labelledby="catalogue-title" class="catalogue">
+      <header class="section-heading">
+        <h2 id="catalogue-title">Matchup catalogue</h2>
+        <p class="mono">{String(guides.length).padStart(2, '0')} {guides.length === 1 ? 'GUIDE' : 'GUIDES'} AVAILABLE</p>
+      </header>
+      <ul class="guide-list">
+        {guides.map(guide => (
+          <li>
+            <a class="guide-listing" href={`${base}${guide.slug}/`} aria-labelledby={`guide-${guide.slug}`} aria-describedby={`desc-${guide.slug}`}>
+              <span class="guide-code"><small>NO. {guide.number}</small><strong>{guide.code}</strong></span>
+              <span class="listing-copy">
+                <span class="listing-title" id={`guide-${guide.slug}`}>{guide.title}</span>
+                <span id={`desc-${guide.slug}`}>{guide.description}</span>
+              </span>
+              <span class="listing-action mono" aria-hidden="true">Open chart <b>↗</b></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>
